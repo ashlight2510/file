@@ -320,17 +320,37 @@
               ${
                 previewType === "image"
                   ? `
-                  <div class="rounded-lg border border-white/10 bg-white/5 p-3">
+                  <div class="rounded-lg border border-white/10 bg-white/5 p-3 space-y-3">
                     <div class="flex items-center justify-between gap-3">
                       <div>
                         <p class="text-xs uppercase tracking-wide text-slate-400">이미지 최적화</p>
-                        <p class="text-sm text-slate-200">WebP/JPEG 재인코딩으로 용량 줄이기</p>
+                        <p class="text-sm text-slate-200">포맷과 품질을 선택한 뒤 용량을 줄이세요.</p>
                       </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3 text-sm">
+                      <label class="flex items-center gap-2 rounded-md bg-black/30 px-3 py-2 ring-1 ring-white/5">
+                        <span class="text-slate-300">포맷</span>
+                        <select class="opt-format bg-transparent text-white focus:outline-none">
+                          <option value="image/webp">WebP</option>
+                          <option value="image/jpeg">JPEG</option>
+                          <option value="image/png">PNG</option>
+                        </select>
+                      </label>
+                      <label class="quality-wrap flex items-center gap-2 rounded-md bg-black/30 px-3 py-2 ring-1 ring-white/5">
+                        <span class="text-slate-300">품질</span>
+                        <input type="range" min="65" max="95" value="82" class="opt-quality accent-emerald-400" />
+                        <span class="quality-value text-emerald-200 font-semibold">82%</span>
+                      </label>
+                    </div>
+                    <div class="flex flex-wrap gap-3">
                       <button class="optimize-btn rounded-full bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-emerald-200 ring-1 ring-emerald-400/40 hover:bg-emerald-500/30">
-                        최적화 & 다운로드
+                        최적화
+                      </button>
+                      <button class="download-btn rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/15 opacity-50 cursor-not-allowed" disabled>
+                        다운로드
                       </button>
                     </div>
-                    <p class="optimize-status mt-2 text-xs text-slate-300">현재 크기: ${formatBytes(
+                    <p class="optimize-status text-xs text-slate-300">현재 크기: ${formatBytes(
                       file.size
                     )}</p>
                   </div>
@@ -351,7 +371,38 @@
         if (previewType === "image") {
           const btn = card.querySelector(".optimize-btn");
           const statusEl = card.querySelector(".optimize-status");
-          btn.addEventListener("click", () => optimizeImage(file, statusEl));
+          const formatSelect = card.querySelector(".opt-format");
+          const qualityInput = card.querySelector(".opt-quality");
+          const qualityValue = card.querySelector(".quality-value");
+          const qualityWrap = card.querySelector(".quality-wrap");
+          const downloadBtn = card.querySelector(".download-btn");
+
+          qualityInput.addEventListener("input", () => {
+            qualityValue.textContent = `${qualityInput.value}%`;
+          });
+
+          formatSelect.addEventListener("change", () => {
+            const isPng = formatSelect.value === "image/png";
+            qualityInput.disabled = isPng;
+            qualityWrap.classList.toggle("opacity-60", isPng);
+            qualityValue.textContent = isPng
+              ? "무손실"
+              : `${qualityInput.value}%`;
+          });
+
+          btn.addEventListener("click", () =>
+            optimizeImage(
+              file,
+              statusEl,
+              formatSelect,
+              qualityInput,
+              downloadBtn
+            )
+          );
+
+          downloadBtn.addEventListener("click", () =>
+            downloadOptimized(file, downloadBtn)
+          );
         }
 
         return card;
@@ -400,9 +451,40 @@
         });
       }
 
-      async function optimizeImage(file, statusEl) {
+      function toggleDownloadButton(btn, enabled) {
+        btn.disabled = !enabled;
+        btn.classList.toggle("opacity-50", !enabled);
+        btn.classList.toggle("cursor-not-allowed", !enabled);
+      }
+
+      function cleanupDownloadUrl(btn) {
+        if (btn.dataset.href) {
+          URL.revokeObjectURL(btn.dataset.href);
+          delete btn.dataset.href;
+        }
+      }
+
+      async function optimizeImage(
+        file,
+        statusEl,
+        formatSelect,
+        qualityInput,
+        downloadBtn
+      ) {
         const MAX_DIMENSION = 2560;
-        statusEl.textContent = "최적화 중…";
+        const format = formatSelect.value;
+        const quality =
+          format === "image/png" ? 1 : Number(qualityInput.value) / 100;
+        const formatLabel =
+          format === "image/webp"
+            ? "WebP"
+            : format === "image/png"
+            ? "PNG"
+            : "JPEG";
+        statusEl.textContent = `최적화 중… (${formatLabel}${
+          format === "image/png" ? " 무손실" : ` ${qualityInput.value}%`
+        })`;
+        toggleDownloadButton(downloadBtn, false);
 
         const url = URL.createObjectURL(file);
         const img = new Image();
@@ -431,12 +513,13 @@
 
         let blob;
         try {
-          blob = await toBlobAsync(canvas, "image/webp", 0.8);
+          blob = await toBlobAsync(canvas, format, quality);
         } catch (err) {
-          blob = await toBlobAsync(canvas, "image/jpeg", 0.82);
-        } finally {
+          statusEl.textContent = "이 포맷 변환을 지원하지 않습니다.";
           URL.revokeObjectURL(url);
+          return;
         }
+        URL.revokeObjectURL(url);
 
         const savings = file.size - blob.size;
         const percent = ((savings / file.size) * 100).toFixed(1);
@@ -445,21 +528,43 @@
             ? `↓ ${formatBytes(savings)} (${percent}%)`
             : "증가됨 (품질 유지)";
 
-        statusEl.textContent = `최적화 완료: ${formatBytes(
+        statusEl.textContent = `예상 크기: ${formatBytes(
           blob.size
         )} (${saveText})`;
 
         const baseName = file.name.includes(".")
           ? file.name.slice(0, file.name.lastIndexOf("."))
           : file.name;
-        const ext = blob.type === "image/webp" ? "webp" : "jpg";
+        const ext =
+          blob.type === "image/webp"
+            ? "webp"
+            : blob.type === "image/png"
+            ? "png"
+            : "jpg";
 
+        cleanupDownloadUrl(downloadBtn);
+        downloadBtn.dataset.href = URL.createObjectURL(blob);
+        downloadBtn.dataset.ext = ext;
+        downloadBtn.dataset.base = baseName;
+        toggleDownloadButton(downloadBtn, true);
+      }
+
+      function downloadOptimized(file, downloadBtn) {
+        const href = downloadBtn.dataset.href;
+        if (!href) {
+          alert("먼저 최적화를 실행해주세요.");
+          return;
+        }
+        const ext = downloadBtn.dataset.ext || "webp";
+        const baseName =
+          downloadBtn.dataset.base ||
+          (file.name.includes(".")
+            ? file.name.slice(0, file.name.lastIndexOf("."))
+            : file.name);
         const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
+        link.href = href;
         link.download = `${baseName}-optimized.${ext}`;
         link.click();
-
-        setTimeout(() => URL.revokeObjectURL(link.href), 2000);
       }
     </script>
   </body>
