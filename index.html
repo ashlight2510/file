@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>파일 최적화 스튜디오</title>
+
+    <meta
+      name="description"
+      content="이미지 용량을 WebP/JPEG로 즉시 줄이고, 부가기능으로 파일 정보·해시·미리보기를 제공하는 로컬 전용 도구."
+    />
+    <meta
+      name="keywords"
+      content="image optimize, webp converter, jpeg compress, file info, hash checker"
+    />
+    <meta property="og:title" content="File Optimize Studio" />
+    <meta
+      property="og:description"
+      content="Optimize images to WebP/JPEG and inspect files securely in your browser."
+    />
+    <meta
+      property="og:image"
+      content="https://dummyimage.com/1200x630/0b1220/ffffff&text=File+Optimize+Studio"
+    />
+    <meta property="og:type" content="website" />
+
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='100%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%23142136'/%3E%3Cstop offset='100%25' stop-color='%230ea5e9'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Cpath d='M20 20h24v24H20z' fill='none' stroke='%23e2e8f0' stroke-width='4' stroke-linejoin='round'/%3E%3Cpath d='M28 20v-4h8v4' fill='none' stroke='%23e2e8f0' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-slate-950 text-slate-100">
+    <div class="relative overflow-hidden min-h-screen pb-16">
+      <div
+        class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(14,165,233,0.14),transparent_35%),radial-gradient(circle_at_80%_10%,rgba(16,185,129,0.2),transparent_30%),radial-gradient(circle_at_70%_80%,rgba(99,102,241,0.18),transparent_35%)] pointer-events-none"
+        aria-hidden="true"
+      ></div>
+      <main class="relative z-10 max-w-6xl mx-auto px-6 py-12">
+        <header class="text-center space-y-4">
+          <p
+            class="inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-sm text-slate-200 ring-1 ring-white/10"
+          >
+            <span class="text-emerald-300">로컬 전용</span> 이미지 최적화 + 파일
+            정보
+          </p>
+          <h1 class="text-3xl md:text-4xl font-bold tracking-tight">
+            드래그 한 번으로
+            <span class="text-emerald-300">이미지 용량을 줄이고</span>
+            파일 인사이트까지
+          </h1>
+          <p class="text-slate-300 max-w-2xl mx-auto">
+            주요 기능: WebP/JPEG 재인코딩과 자동 리사이즈로 이미지 최적화.
+            부가기능: 업로드 없이 로컬에서 파일 정보·SHA-256
+            해시·이미지/PDF/텍스트 미리보기 제공.
+          </p>
+        </header>
+
+        <section
+          class="mt-10 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 shadow-xl"
+        >
+          <div
+            id="dropZone"
+            class="group relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-white/20 bg-black/20 px-6 py-10 text-center transition hover:border-emerald-300/60 hover:bg-white/10"
+          >
+            <div
+              class="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-300/40"
+            >
+              📁
+            </div>
+            <div class="space-y-1">
+              <p class="text-lg font-semibold">
+                이미지/파일을 드래그 앤 드롭하세요
+              </p>
+              <p class="text-sm text-slate-300">
+                또는 버튼으로 선택 (여러 개 가능, 데이터는 절대 업로드되지
+                않습니다)
+              </p>
+            </div>
+            <input
+              id="fileInput"
+              type="file"
+              multiple
+              class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+            />
+          </div>
+
+          <div class="mt-6 grid gap-4 md:grid-cols-3">
+            <div class="rounded-lg bg-white/5 p-4 ring-1 ring-white/10">
+              <p class="text-sm text-slate-300">주요 기능</p>
+              <p class="font-semibold">이미지 WebP/JPEG 최적화 + 리사이즈</p>
+            </div>
+            <div class="rounded-lg bg-white/5 p-4 ring-1 ring-white/10">
+              <p class="text-sm text-slate-300">부가기능</p>
+              <p class="font-semibold">
+                확장자, 크기, MIME, 수정 시각, SHA-256 해시
+              </p>
+            </div>
+            <div class="rounded-lg bg-white/5 p-4 ring-1 ring-white/10">
+              <p class="text-sm text-slate-300">미리보기</p>
+              <p class="font-semibold">이미지·PDF·텍스트(+JSON) 빠른 확인</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="mt-10">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-xl font-semibold">파일 결과 / 최적화</h2>
+            <p class="text-sm text-slate-300">
+              파일을 올리면 최적화 버튼과 정보·해시·미리보기가 함께 표시됩니다.
+            </p>
+          </div>
+          <div id="fileList" class="grid grid-cols-1 gap-6">
+            <div
+              class="rounded-xl border border-white/10 bg-white/5 p-5 text-slate-300"
+            >
+              아직 파일이 없습니다. 상단 영역에 파일을 드래그하거나 선택하세요.
+            </div>
+          </div>
+        </section>
+      </main>
+      <div
+        class="relative z-10 flex justify-center pt-8 mt-12 border-t border-gray-800/60"
+      >
+        <a
+          href="https://funnyfunny.cloud/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-medium transition-colors duration-200"
+        >
+          다른 서비스 보기
+        </a>
+      </div>
+    </div>
+
+    <script>
+      const dropZone = document.getElementById("dropZone");
+      const fileInput = document.getElementById("fileInput");
+      const fileList = document.getElementById("fileList");
+
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("border-emerald-300");
+      });
+
+      dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("border-emerald-300");
+      });
+
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("border-emerald-300");
+        if (e.dataTransfer.files?.length) {
+          handleFiles(e.dataTransfer.files);
+        }
+      });
+
+      fileInput.addEventListener("change", (e) => {
+        if (e.target.files?.length) {
+          handleFiles(e.target.files);
+        }
+      });
+
+      function formatBytes(bytes) {
+        if (bytes === 0) return "0 B";
+        const k = 1024;
+        const sizes = ["B", "KB", "MB", "GB", "TB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        const num = bytes / Math.pow(k, i);
+        return `${num.toFixed(num >= 10 || i === 0 ? 0 : 1)} ${sizes[i]}`;
+      }
+
+      function bufferToHex(buffer) {
+        const bytes = new Uint8Array(buffer);
+        return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join(
+          ""
+        );
+      }
+
+      async function computeSHA256(buffer) {
+        const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+        return bufferToHex(hashBuffer);
+      }
+
+      function detectPreviewKind(mime, ext) {
+        const textExt = [
+          "txt",
+          "md",
+          "json",
+          "js",
+          "ts",
+          "css",
+          "html",
+          "xml",
+          "csv",
+          "yml",
+          "yaml",
+          "log",
+        ];
+        if (mime.startsWith("image/")) return "image";
+        if (mime === "application/pdf" || ext === "pdf") return "pdf";
+        if (mime.startsWith("text/") || textExt.includes(ext)) return "text";
+        return "none";
+      }
+
+      async function parseText(buffer) {
+        const decoder = new TextDecoder("utf-8");
+        const text = decoder.decode(buffer);
+        const limit = 2000;
+        const trimmed = text.length > limit ? `${text.slice(0, limit)}…` : text;
+        return trimmed;
+      }
+
+      function createPlaceholder(file) {
+        const card = document.createElement("article");
+        card.className =
+          "relative overflow-hidden rounded-xl border border-white/10 bg-white/5 p-5 shadow-lg";
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-sm text-slate-300">처리 중</p>
+              <h3 class="text-lg font-semibold break-all">${file.name}</h3>
+            </div>
+            <div class="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center">
+              <span class="h-5 w-5 border-2 border-emerald-300/70 border-t-transparent rounded-full animate-spin"></span>
+            </div>
+          </div>
+          <p class="mt-3 text-sm text-slate-300">해시와 미리보기를 계산하는 중입니다…</p>
+        `;
+        return card;
+      }
+
+      async function renderFile(file) {
+        const buffer = await file.arrayBuffer();
+        const ext = file.name.includes(".")
+          ? file.name.split(".").pop().toLowerCase()
+          : "—";
+        const mime = file.type || "알 수 없음";
+        const previewType = detectPreviewKind(mime, ext);
+        const hash = await computeSHA256(buffer);
+        let previewContent = "";
+
+        if (previewType === "text") {
+          const text = await parseText(buffer);
+          previewContent = `<pre class="h-full max-h-80 overflow-auto rounded-lg bg-black/60 p-4 text-xs leading-5 text-slate-200 whitespace-pre-wrap">${text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")}</pre>`;
+        } else if (previewType === "image") {
+          const url = URL.createObjectURL(file);
+          previewContent = `<div class="h-full overflow-hidden rounded-lg border border-white/10 bg-black/40">
+              <img src="${url}" alt="${file.name}" class="h-full max-h-80 w-full object-contain bg-black/20" onload="URL.revokeObjectURL('${url}')"/>
+            </div>`;
+        } else if (previewType === "pdf") {
+          const url = URL.createObjectURL(file);
+          previewContent = `<div class="h-full overflow-hidden rounded-lg border border-white/10 bg-black/40">
+              <embed src="${url}" type="application/pdf" class="h-72 w-full" />
+            </div>`;
+        } else {
+          previewContent = `<div class="h-full rounded-lg border border-dashed border-white/10 bg-black/30 p-4 text-sm text-slate-300 flex items-center justify-center text-center">
+            미리보기가 지원되지 않는 형식입니다.
+          </div>`;
+        }
+
+        const lastModified = new Date(file.lastModified).toLocaleString(
+          "ko-KR"
+        );
+
+        const card = document.createElement("article");
+        card.className =
+          "relative overflow-hidden rounded-xl border border-white/10 bg-white/5 p-5 shadow-lg";
+
+        card.innerHTML = `
+          <div class="flex flex-col gap-5 md:flex-row md:gap-6">
+            <div class="flex-1 min-w-0 space-y-3">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <p class="text-xs uppercase tracking-wide text-emerald-300">파일</p>
+                  <h3 class="text-lg font-semibold break-all">${file.name}</h3>
+                </div>
+                <span class="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300 ring-1 ring-emerald-400/40">
+                  ${ext === "—" ? "확장자 없음" : ext.toUpperCase()}
+                </span>
+              </div>
+              <dl class="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <dt class="text-slate-400">크기</dt>
+                  <dd class="font-semibold">${formatBytes(file.size)}</dd>
+                </div>
+                <div>
+                  <dt class="text-slate-400">MIME</dt>
+                  <dd class="font-semibold break-all">${mime}</dd>
+                </div>
+                <div>
+                  <dt class="text-slate-400">수정 시각</dt>
+                  <dd class="font-semibold">${lastModified}</dd>
+                </div>
+                <div>
+                  <dt class="text-slate-400">미리보기</dt>
+                  <dd class="font-semibold">
+                    ${
+                      previewType === "text"
+                        ? "텍스트"
+                        : previewType === "image"
+                        ? "이미지"
+                        : previewType === "pdf"
+                        ? "PDF"
+                        : "지원 안 함"
+                    }
+                  </dd>
+                </div>
+              </dl>
+              <div class="rounded-lg bg-black/50 p-3 text-xs font-mono text-emerald-200 break-all ring-1 ring-white/5">
+                <p class="text-slate-400 mb-1">SHA-256</p>
+                <p class="leading-5">${hash}</p>
+              </div>
+              ${
+                previewType === "image"
+                  ? `
+                  <div class="rounded-lg border border-white/10 bg-white/5 p-3">
+                    <div class="flex items-center justify-between gap-3">
+                      <div>
+                        <p class="text-xs uppercase tracking-wide text-slate-400">이미지 최적화</p>
+                        <p class="text-sm text-slate-200">WebP/JPEG 재인코딩으로 용량 줄이기</p>
+                      </div>
+                      <button class="optimize-btn rounded-full bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-emerald-200 ring-1 ring-emerald-400/40 hover:bg-emerald-500/30">
+                        최적화 & 다운로드
+                      </button>
+                    </div>
+                    <p class="optimize-status mt-2 text-xs text-slate-300">현재 크기: ${formatBytes(
+                      file.size
+                    )}</p>
+                  </div>
+                `
+                  : ""
+              }
+              <p class="text-xs text-slate-400">
+                생성 시각은 브라우저에서 제공하지 않아 표시할 수 없습니다. 수정 시각은 파일의 메타데이터를 따릅니다.
+              </p>
+            </div>
+            <div class="md:w-5/12 lg:w-4/12 space-y-2">
+              <p class="text-xs uppercase tracking-wide text-slate-400">미리보기</p>
+              ${previewContent}
+            </div>
+          </div>
+        `;
+
+        if (previewType === "image") {
+          const btn = card.querySelector(".optimize-btn");
+          const statusEl = card.querySelector(".optimize-status");
+          btn.addEventListener("click", () => optimizeImage(file, statusEl));
+        }
+
+        return card;
+      }
+
+      function clearEmptyState() {
+        if (fileList.children.length === 1) {
+          fileList.innerHTML = "";
+        }
+      }
+
+      async function handleFiles(files) {
+        const fileArray = Array.from(files);
+        if (!fileArray.length) return;
+        clearEmptyState();
+
+        for (const file of fileArray) {
+          const placeholder = createPlaceholder(file);
+          fileList.appendChild(placeholder);
+          try {
+            const card = await renderFile(file);
+            placeholder.replaceWith(card);
+          } catch (err) {
+            placeholder.innerHTML = `
+              <div class="text-red-200">처리 중 오류가 발생했습니다: ${
+                err?.message || err
+              }</div>
+            `;
+          }
+        }
+      }
+
+      function toBlobAsync(canvas, type, quality) {
+        return new Promise((resolve, reject) => {
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                reject(new Error("최적화에 실패했습니다."));
+                return;
+              }
+              resolve(blob);
+            },
+            type,
+            quality
+          );
+        });
+      }
+
+      async function optimizeImage(file, statusEl) {
+        const MAX_DIMENSION = 2560;
+        statusEl.textContent = "최적화 중…";
+
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+
+        const loaded = new Promise((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = reject;
+        });
+        img.src = url;
+        await loaded;
+
+        const scale =
+          Math.max(img.width, img.height) > MAX_DIMENSION
+            ? MAX_DIMENSION / Math.max(img.width, img.height)
+            : 1;
+
+        const width = Math.round(img.width * scale);
+        const height = Math.round(img.height * scale);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        let blob;
+        try {
+          blob = await toBlobAsync(canvas, "image/webp", 0.8);
+        } catch (err) {
+          blob = await toBlobAsync(canvas, "image/jpeg", 0.82);
+        } finally {
+          URL.revokeObjectURL(url);
+        }
+
+        const savings = file.size - blob.size;
+        const percent = ((savings / file.size) * 100).toFixed(1);
+        const saveText =
+          savings > 0
+            ? `↓ ${formatBytes(savings)} (${percent}%)`
+            : "증가됨 (품질 유지)";
+
+        statusEl.textContent = `최적화 완료: ${formatBytes(
+          blob.size
+        )} (${saveText})`;
+
+        const baseName = file.name.includes(".")
+          ? file.name.slice(0, file.name.lastIndexOf("."))
+          : file.name;
+        const ext = blob.type === "image/webp" ? "webp" : "jpg";
+
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${baseName}-optimized.${ext}`;
+        link.click();
+
+        setTimeout(() => URL.revokeObjectURL(link.href), 2000);
+      }
+    </script>
+  </body>
+</html>
