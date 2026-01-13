@@ -69,6 +69,27 @@
       margin: 16px auto;
         text-align: center;
 }
+    .lang-switch {
+      display: inline-flex;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(15, 23, 42, 0.7);
+      padding: 4px;
+      gap: 4px;
+      font-size: 13px;
+    }
+    .lang-switch button {
+      border-radius: 999px;
+      padding: 6px 12px;
+      color: #cbd5f5;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+    .lang-switch button.active {
+      background: rgba(16, 185, 129, 0.2);
+      color: #ecfdf3;
+    }
   </style>
 </head>
   <body class="min-h-screen bg-slate-950 text-slate-100"><div class="relative overflow-hidden min-h-screen pb-16">
@@ -77,19 +98,26 @@
         aria-hidden="true"
       ></div>
       <main class="relative z-10 max-w-6xl mx-auto px-6 py-12">
+        <div class="flex justify-center md:justify-end mb-6">
+          <div class="lang-switch" role="tablist" aria-label="Language switcher">
+            <button type="button" data-lang="ko" class="active">한국어</button>
+            <button type="button" data-lang="en">English</button>
+          </div>
+        </div>
         <header class="text-center space-y-4">
           <p
             class="inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-sm text-slate-200 ring-1 ring-white/10"
+            data-i18n-html="badge"
           >
             <span class="text-emerald-300">로컬 전용</span> 이미지 최적화 + 파일
             정보
           </p>
-          <h1 class="text-3xl md:text-4xl font-bold tracking-tight">
+          <h1 class="text-3xl md:text-4xl font-bold tracking-tight" data-i18n-html="heroTitle">
             드래그 한 번으로
             <span class="text-emerald-300">이미지 용량을 줄이고</span>
             파일 인사이트까지
           </h1>
-          <p class="text-slate-300 max-w-2xl mx-auto">
+          <p class="text-slate-300 max-w-2xl mx-auto" data-i18n="heroDescription">
             주요 기능: WebP/JPEG 재인코딩과 자동 리사이즈로 이미지 최적화.
             부가기능: 업로드 없이 로컬에서 파일 정보·SHA-256
             해시·이미지/PDF/텍스트 미리보기 제공.
@@ -109,10 +137,10 @@
               📁
             </div>
             <div class="space-y-1">
-              <p class="text-lg font-semibold">
+              <p class="text-lg font-semibold" data-i18n="dropTitle">
                 이미지/파일을 드래그 앤 드롭하세요
               </p>
-              <p class="text-sm text-slate-300">
+              <p class="text-sm text-slate-300" data-i18n="dropHint">
                 또는 버튼으로 선택 (여러 개 가능, 데이터는 절대 업로드되지
                 않습니다)
               </p>
@@ -127,32 +155,33 @@
 
           <div class="mt-6 grid gap-4 md:grid-cols-3">
             <div class="rounded-lg bg-white/5 p-4 ring-1 ring-white/10">
-              <p class="text-sm text-slate-300">주요 기능</p>
-              <p class="font-semibold">이미지 WebP/JPEG 최적화 + 리사이즈</p>
+              <p class="text-sm text-slate-300" data-i18n="cardPrimaryLabel">주요 기능</p>
+              <p class="font-semibold" data-i18n="cardPrimaryDesc">이미지 WebP/JPEG 최적화 + 리사이즈</p>
             </div>
             <div class="rounded-lg bg-white/5 p-4 ring-1 ring-white/10">
-              <p class="text-sm text-slate-300">부가기능</p>
-              <p class="font-semibold">
+              <p class="text-sm text-slate-300" data-i18n="cardExtraLabel">부가기능</p>
+              <p class="font-semibold" data-i18n="cardExtraDesc">
                 확장자, 크기, MIME, 수정 시각, SHA-256 해시
               </p>
             </div>
             <div class="rounded-lg bg-white/5 p-4 ring-1 ring-white/10">
-              <p class="text-sm text-slate-300">미리보기</p>
-              <p class="font-semibold">이미지·PDF·텍스트(+JSON) 빠른 확인</p>
+              <p class="text-sm text-slate-300" data-i18n="cardPreviewLabel">미리보기</p>
+              <p class="font-semibold" data-i18n="cardPreviewDesc">이미지·PDF·텍스트(+JSON) 빠른 확인</p>
             </div>
           </div>
         </section>
 
         <section class="mt-10">
           <div class="flex items-center justify-between mb-3">
-            <h2 class="text-xl font-semibold">파일 결과 / 최적화</h2>
-            <p class="text-sm text-slate-300">
+            <h2 class="text-xl font-semibold" data-i18n="sectionTitle">파일 결과 / 최적화</h2>
+            <p class="text-sm text-slate-300" data-i18n="sectionHint">
               파일을 올리면 최적화 버튼과 정보·해시·미리보기가 함께 표시됩니다.
             </p>
           </div>
           <div id="fileList" class="grid grid-cols-1 gap-6">
             <div
               class="rounded-xl border border-white/10 bg-white/5 p-5 text-slate-300"
+              data-i18n="emptyState"
             >
               아직 파일이 없습니다. 상단 영역에 파일을 드래그하거나 선택하세요.
             </div>
@@ -167,6 +196,7 @@
           target="_blank"
           rel="noopener noreferrer"
           class="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-medium transition-colors duration-200"
+          data-i18n="viewOtherServices"
         >
           다른 서비스 보기
         </a>
@@ -174,6 +204,198 @@
     </div>
 
     <script>
+      const translations = {
+        ko: {
+          metaTitle: "파일 최적화 스튜디오",
+          metaDescription:
+            "이미지 용량을 WebP/JPEG로 즉시 줄이고, 부가기능으로 파일 정보·해시·미리보기를 제공하는 로컬 전용 도구.",
+          metaOgTitle: "파일 최적화 스튜디오",
+          metaOgDescription:
+            "로컬에서 WebP/JPEG로 이미지 용량을 최적화하고 파일 정보, 해시, 미리보기를 확인하세요.",
+          badge:
+            '<span class="text-emerald-300">로컬 전용</span> 이미지 최적화 + 파일 정보',
+          heroTitle:
+            '드래그 한 번으로 <span class="text-emerald-300">이미지 용량을 줄이고</span> 파일 인사이트까지',
+          heroDescription:
+            "주요 기능: WebP/JPEG 재인코딩과 자동 리사이즈로 이미지 최적화. 부가기능: 업로드 없이 로컬에서 파일 정보·SHA-256 해시·이미지/PDF/텍스트 미리보기 제공.",
+          dropTitle: "이미지/파일을 드래그 앤 드롭하세요",
+          dropHint:
+            "또는 버튼으로 선택 (여러 개 가능, 데이터는 절대 업로드되지 않습니다)",
+          cardPrimaryLabel: "주요 기능",
+          cardPrimaryDesc: "이미지 WebP/JPEG 최적화 + 리사이즈",
+          cardExtraLabel: "부가기능",
+          cardExtraDesc: "확장자, 크기, MIME, 수정 시각, SHA-256 해시",
+          cardPreviewLabel: "미리보기",
+          cardPreviewDesc: "이미지·PDF·텍스트(+JSON) 빠른 확인",
+          sectionTitle: "파일 결과 / 최적화",
+          sectionHint:
+            "파일을 올리면 최적화 버튼과 정보·해시·미리보기가 함께 표시됩니다.",
+          emptyState:
+            "아직 파일이 없습니다. 상단 영역에 파일을 드래그하거나 선택하세요.",
+          viewOtherServices: "다른 서비스 보기",
+          processing: "처리 중",
+          processingHint: "해시와 미리보기를 계산하는 중입니다…",
+          unknownMime: "알 수 없음",
+          previewUnsupported: "미리보기가 지원되지 않는 형식입니다.",
+          fileLabel: "파일",
+          noExtension: "확장자 없음",
+          sizeLabel: "크기",
+          modifiedLabel: "수정 시각",
+          previewLabel: "미리보기",
+          previewText: "텍스트",
+          previewImage: "이미지",
+          previewPdf: "PDF",
+          previewNone: "지원 안 함",
+          imageOptimizeLabel: "이미지 최적화",
+          imageOptimizeHint: "포맷과 품질을 선택한 뒤 용량을 줄이세요.",
+          formatLabel: "포맷",
+          qualityLabel: "품질",
+          optimizeBtn: "최적화",
+          downloadBtn: "다운로드",
+          currentSize: "현재 크기: {size}",
+          createdInfo:
+            "생성 시각은 브라우저에서 제공하지 않아 표시할 수 없습니다. 수정 시각은 파일의 메타데이터를 따릅니다.",
+          previewBlockLabel: "미리보기",
+          lossless: "무손실",
+          processingError: "처리 중 오류가 발생했습니다: {message}",
+          optimizeFail: "최적화에 실패했습니다.",
+          optimizeStatus: "최적화 중… ({formatLabel}{qualityLabel})",
+          formatNotSupported: "이 포맷 변환을 지원하지 않습니다.",
+          sizeIncrease: "증가됨 (품질 유지)",
+          savingsText: "↓ {size} ({percent}%)",
+          estimatedSize: "예상 크기: {size} ({saveText})",
+          runOptimizeFirst: "먼저 최적화를 실행해주세요.",
+        },
+        en: {
+          metaTitle: "File Optimize Studio",
+          metaDescription:
+            "Reduce image size to WebP/JPEG and inspect files locally with metadata, hashes, and previews.",
+          metaOgTitle: "File Optimize Studio",
+          metaOgDescription:
+            "Optimize images to WebP/JPEG and inspect file info, hashes, and previews locally.",
+          badge:
+            '<span class="text-emerald-300">Local-only</span> Image optimization + file insights',
+          heroTitle:
+            'Reduce <span class="text-emerald-300">image size</span> in one drag and get file insights',
+          heroDescription:
+            "Core: optimize images with WebP/JPEG re-encoding and auto-resize. Extras: local-only file info, SHA-256 hash, and image/PDF/text previews.",
+          dropTitle: "Drag & drop images/files",
+          dropHint:
+            "Or pick with the button (multiple files supported, nothing is uploaded)",
+          cardPrimaryLabel: "Core",
+          cardPrimaryDesc: "WebP/JPEG optimization + resizing",
+          cardExtraLabel: "Extras",
+          cardExtraDesc: "Extension, size, MIME, modified time, SHA-256 hash",
+          cardPreviewLabel: "Preview",
+          cardPreviewDesc: "Quick view for images, PDFs, and text (+JSON)",
+          sectionTitle: "File results / optimization",
+          sectionHint:
+            "Upload files to see optimize buttons plus info, hashes, and previews.",
+          emptyState:
+            "No files yet. Drag or select files from the area above.",
+          viewOtherServices: "See other services",
+          processing: "Processing",
+          processingHint: "Calculating hashes and previews…",
+          unknownMime: "Unknown",
+          previewUnsupported: "Preview is not available for this format.",
+          fileLabel: "File",
+          noExtension: "No extension",
+          sizeLabel: "Size",
+          modifiedLabel: "Modified",
+          previewLabel: "Preview",
+          previewText: "Text",
+          previewImage: "Image",
+          previewPdf: "PDF",
+          previewNone: "Not supported",
+          imageOptimizeLabel: "Image optimization",
+          imageOptimizeHint: "Choose format and quality, then reduce size.",
+          formatLabel: "Format",
+          qualityLabel: "Quality",
+          optimizeBtn: "Optimize",
+          downloadBtn: "Download",
+          currentSize: "Current size: {size}",
+          createdInfo:
+            "Created time is not provided by the browser. Modified time comes from file metadata.",
+          previewBlockLabel: "Preview",
+          lossless: "Lossless",
+          processingError: "Processing error: {message}",
+          optimizeFail: "Optimization failed.",
+          optimizeStatus: "Optimizing… ({formatLabel}{qualityLabel})",
+          formatNotSupported: "This format conversion is not supported.",
+          sizeIncrease: "Increased (kept quality)",
+          savingsText: "↓ {size} ({percent}%)",
+          estimatedSize: "Estimated size: {size} ({saveText})",
+          runOptimizeFirst: "Run optimization first.",
+        },
+      };
+
+      let currentLang = "ko";
+
+      function t(key, vars = {}) {
+        const langTable = translations[currentLang] || translations.ko;
+        const template = langTable[key] ?? translations.ko[key] ?? key;
+        if (typeof template === "function") {
+          return template(vars);
+        }
+        return template.replace(/\{(\w+)\}/g, (_, token) =>
+          vars[token] !== undefined ? vars[token] : `{${token}}`
+        );
+      }
+
+      function applyTranslations() {
+        document.title = t("metaTitle");
+        const desc = document.querySelector('meta[name="description"]');
+        if (desc) desc.setAttribute("content", t("metaDescription"));
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) ogTitle.setAttribute("content", t("metaOgTitle"));
+        const ogDesc = document.querySelector(
+          'meta[property="og:description"]'
+        );
+        if (ogDesc) ogDesc.setAttribute("content", t("metaOgDescription"));
+
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          el.textContent = t(el.dataset.i18n);
+        });
+        document.querySelectorAll("[data-i18n-html]").forEach((el) => {
+          el.innerHTML = t(el.dataset.i18nHtml);
+        });
+      }
+
+      function setLang(lang, options = {}) {
+        const nextLang = translations[lang] ? lang : "ko";
+        currentLang = nextLang;
+        document.documentElement.lang = nextLang;
+        localStorage.setItem("preferredLang", nextLang);
+        document.querySelectorAll(".lang-switch button").forEach((button) => {
+          button.classList.toggle("active", button.dataset.lang === nextLang);
+        });
+        applyTranslations();
+
+        if (options.updateUrl) {
+          const url = new URL(window.location.href);
+          url.searchParams.set("lang", nextLang);
+          window.history.replaceState({}, "", url);
+        }
+      }
+
+      function detectLang() {
+        const params = new URLSearchParams(window.location.search);
+        const paramLang = params.get("lang");
+        if (translations[paramLang]) return paramLang;
+        const stored = localStorage.getItem("preferredLang");
+        if (translations[stored]) return stored;
+        const browser = navigator.language?.toLowerCase() || "";
+        return browser.startsWith("en") ? "en" : "ko";
+      }
+
+      document.querySelectorAll(".lang-switch button").forEach((button) => {
+        button.addEventListener("click", () => {
+          setLang(button.dataset.lang, { updateUrl: true });
+        });
+      });
+
+      setLang(detectLang(), { updateUrl: false });
+
       const dropZone = document.getElementById("dropZone");
       const fileInput = document.getElementById("fileInput");
       const fileList = document.getElementById("fileList");
@@ -259,14 +481,14 @@
         card.innerHTML = `
           <div class="flex items-start justify-between gap-3">
             <div>
-              <p class="text-sm text-slate-300">처리 중</p>
+              <p class="text-sm text-slate-300">${t("processing")}</p>
               <h3 class="text-lg font-semibold break-all">${file.name}</h3>
             </div>
             <div class="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center">
               <span class="h-5 w-5 border-2 border-emerald-300/70 border-t-transparent rounded-full animate-spin"></span>
             </div>
           </div>
-          <p class="mt-3 text-sm text-slate-300">해시와 미리보기를 계산하는 중입니다…</p>
+          <p class="mt-3 text-sm text-slate-300">${t("processingHint")}</p>
         `;
         return card;
       }
@@ -276,7 +498,7 @@
         const ext = file.name.includes(".")
           ? file.name.split(".").pop().toLowerCase()
           : "—";
-        const mime = file.type || "알 수 없음";
+        const mime = file.type || t("unknownMime");
         const previewType = detectPreviewKind(mime, ext);
         const hash = await computeSHA256(buffer);
         let previewContent = "";
@@ -299,12 +521,12 @@
             </div>`;
         } else {
           previewContent = `<div class="h-full rounded-lg border border-dashed border-white/10 bg-black/30 p-4 text-sm text-slate-300 flex items-center justify-center text-center">
-            미리보기가 지원되지 않는 형식입니다.
+            ${t("previewUnsupported")}
           </div>`;
         }
 
         const lastModified = new Date(file.lastModified).toLocaleString(
-          "ko-KR"
+          currentLang === "en" ? "en-US" : "ko-KR"
         );
 
         const card = document.createElement("article");
@@ -316,16 +538,16 @@
             <div class="flex-1 min-w-0 space-y-3">
               <div class="flex items-start justify-between gap-3">
                 <div>
-                  <p class="text-xs uppercase tracking-wide text-emerald-300">파일</p>
+                  <p class="text-xs uppercase tracking-wide text-emerald-300">${t("fileLabel")}</p>
                   <h3 class="text-lg font-semibold break-all">${file.name}</h3>
                 </div>
                 <span class="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300 ring-1 ring-emerald-400/40">
-                  ${ext === "—" ? "확장자 없음" : ext.toUpperCase()}
+                  ${ext === "—" ? t("noExtension") : ext.toUpperCase()}
                 </span>
               </div>
               <dl class="grid grid-cols-2 gap-3 text-sm">
                 <div>
-                  <dt class="text-slate-400">크기</dt>
+                  <dt class="text-slate-400">${t("sizeLabel")}</dt>
                   <dd class="font-semibold">${formatBytes(file.size)}</dd>
                 </div>
                 <div>
@@ -333,20 +555,20 @@
                   <dd class="font-semibold break-all">${mime}</dd>
                 </div>
                 <div>
-                  <dt class="text-slate-400">수정 시각</dt>
+                  <dt class="text-slate-400">${t("modifiedLabel")}</dt>
                   <dd class="font-semibold">${lastModified}</dd>
                 </div>
                 <div>
-                  <dt class="text-slate-400">미리보기</dt>
+                  <dt class="text-slate-400">${t("previewLabel")}</dt>
                   <dd class="font-semibold">
                     ${
                       previewType === "text"
-                        ? "텍스트"
+                        ? t("previewText")
                         : previewType === "image"
-                        ? "이미지"
+                        ? t("previewImage")
                         : previewType === "pdf"
-                        ? "PDF"
-                        : "지원 안 함"
+                        ? t("previewPdf")
+                        : t("previewNone")
                     }
                   </dd>
                 </div>
@@ -361,13 +583,17 @@
                   <div class="rounded-lg border border-white/10 bg-white/5 p-3 space-y-3">
                     <div class="flex items-center justify-between gap-3">
                       <div>
-                        <p class="text-xs uppercase tracking-wide text-slate-400">이미지 최적화</p>
-                        <p class="text-sm text-slate-200">포맷과 품질을 선택한 뒤 용량을 줄이세요.</p>
+                        <p class="text-xs uppercase tracking-wide text-slate-400">${t(
+                          "imageOptimizeLabel"
+                        )}</p>
+                        <p class="text-sm text-slate-200">${t(
+                          "imageOptimizeHint"
+                        )}</p>
                       </div>
                     </div>
                     <div class="flex flex-wrap items-center gap-3 text-sm">
                       <label class="flex items-center gap-2 rounded-md bg-black/30 px-3 py-2 ring-1 ring-white/5">
-                        <span class="text-slate-300">포맷</span>
+                        <span class="text-slate-300">${t("formatLabel")}</span>
                         <select class="opt-format bg-transparent text-white focus:outline-none">
                           <option value="image/webp">WebP</option>
                           <option value="image/jpeg">JPEG</option>
@@ -375,32 +601,35 @@
                         </select>
                       </label>
                       <label class="quality-wrap flex items-center gap-2 rounded-md bg-black/30 px-3 py-2 ring-1 ring-white/5">
-                        <span class="text-slate-300">품질</span>
+                        <span class="text-slate-300">${t("qualityLabel")}</span>
                         <input type="range" min="65" max="95" value="82" class="opt-quality accent-emerald-400" />
                         <span class="quality-value text-emerald-200 font-semibold">82%</span>
                       </label>
                     </div>
                     <div class="flex flex-wrap gap-3">
                       <button class="optimize-btn rounded-full bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-emerald-200 ring-1 ring-emerald-400/40 hover:bg-emerald-500/30">
-                        최적화
+                        ${t("optimizeBtn")}
                       </button>
                       <button class="download-btn rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/15 opacity-50 cursor-not-allowed" disabled>
-                        다운로드
+                        ${t("downloadBtn")}
                       </button>
                     </div>
-                    <p class="optimize-status text-xs text-slate-300">현재 크기: ${formatBytes(
-                      file.size
+                    <p class="optimize-status text-xs text-slate-300">${t(
+                      "currentSize",
+                      { size: formatBytes(file.size) }
                     )}</p>
                   </div>
                 `
                   : ""
               }
               <p class="text-xs text-slate-400">
-                생성 시각은 브라우저에서 제공하지 않아 표시할 수 없습니다. 수정 시각은 파일의 메타데이터를 따릅니다.
+                ${t("createdInfo")}
               </p>
             </div>
             <div class="md:w-5/12 lg:w-4/12 space-y-2">
-              <p class="text-xs uppercase tracking-wide text-slate-400">미리보기</p>
+              <p class="text-xs uppercase tracking-wide text-slate-400">${t(
+                "previewBlockLabel"
+              )}</p>
               ${previewContent}
             </div>
           </div>
@@ -424,7 +653,7 @@
             qualityInput.disabled = isPng;
             qualityWrap.classList.toggle("opacity-60", isPng);
             qualityValue.textContent = isPng
-              ? "무손실"
+              ? t("lossless")
               : `${qualityInput.value}%`;
           });
 
@@ -465,9 +694,9 @@
             placeholder.replaceWith(card);
           } catch (err) {
             placeholder.innerHTML = `
-              <div class="text-red-200">처리 중 오류가 발생했습니다: ${
-                err?.message || err
-              }</div>
+              <div class="text-red-200">${t("processingError", {
+                message: err?.message || err,
+              })}</div>
             `;
           }
         }
@@ -478,7 +707,7 @@
           canvas.toBlob(
             (blob) => {
               if (!blob) {
-                reject(new Error("최적화에 실패했습니다."));
+                reject(new Error(t("optimizeFail")));
                 return;
               }
               resolve(blob);
@@ -519,9 +748,14 @@
             : format === "image/png"
             ? "PNG"
             : "JPEG";
-        statusEl.textContent = `최적화 중… (${formatLabel}${
-          format === "image/png" ? " 무손실" : ` ${qualityInput.value}%`
-        })`;
+        const qualityLabel =
+          format === "image/png"
+            ? ` ${t("lossless")}`
+            : ` ${qualityInput.value}%`;
+        statusEl.textContent = t("optimizeStatus", {
+          formatLabel,
+          qualityLabel,
+        });
         toggleDownloadButton(downloadBtn, false);
 
         const url = URL.createObjectURL(file);
@@ -553,7 +787,7 @@
         try {
           blob = await toBlobAsync(canvas, format, quality);
         } catch (err) {
-          statusEl.textContent = "이 포맷 변환을 지원하지 않습니다.";
+          statusEl.textContent = t("formatNotSupported");
           URL.revokeObjectURL(url);
           return;
         }
@@ -563,12 +797,13 @@
         const percent = ((savings / file.size) * 100).toFixed(1);
         const saveText =
           savings > 0
-            ? `↓ ${formatBytes(savings)} (${percent}%)`
-            : "증가됨 (품질 유지)";
+            ? t("savingsText", { size: formatBytes(savings), percent })
+            : t("sizeIncrease");
 
-        statusEl.textContent = `예상 크기: ${formatBytes(
-          blob.size
-        )} (${saveText})`;
+        statusEl.textContent = t("estimatedSize", {
+          size: formatBytes(blob.size),
+          saveText,
+        });
 
         const baseName = file.name.includes(".")
           ? file.name.slice(0, file.name.lastIndexOf("."))
@@ -590,7 +825,7 @@
       function downloadOptimized(file, downloadBtn) {
         const href = downloadBtn.dataset.href;
         if (!href) {
-          alert("먼저 최적화를 실행해주세요.");
+          alert(t("runOptimizeFirst"));
           return;
         }
         const ext = downloadBtn.dataset.ext || "webp";
